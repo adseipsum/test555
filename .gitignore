@@ -1,0 +1,6 @@
+*
+!wp-content/
+!wp-content/**
+**/node_modules/
+**/vendor/
+!.gitignore

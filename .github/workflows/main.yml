@@ -1,0 +1,35 @@
+name: CI
+
+on: 
+  push:
+    branches:    
+      - master
+      - dev
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Push master branch to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: cd ${{ secrets.PROJECT_PATH }} && git init && git remote rm origin && git remote add origin ${{ secrets.REPOSITORY_URL }} && git fetch --all && git reset --hard origin/master
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Push to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: cd ${{ secrets.DEV_PROJECT_PATH }} && git init && git remote rm origin && git remote add origin ${{ secrets.REPOSITORY_URL }} && git fetch --all && git reset --hard origin/dev
